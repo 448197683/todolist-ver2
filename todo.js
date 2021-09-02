@@ -1,30 +1,19 @@
 const form = document.querySelector('form');
 const input = document.querySelector('input');
 const ul = document.querySelector('ul');
-const todoArray = [];
+let todoArray = [];
 
 input.focus();
 
 const handleSubmit = (e) => {
   e.preventDefault();
   const todo = input.value;
+  if (todo === '') {
+    return;
+  }
   addTodo(todo);
-  saveTodo(todo);
+  savrTodo(todo);
   input.value = ``;
-};
-
-const saveTodo = (todo) => {
-  todoArray.push(todo);
-  localStorage.setItem('todos', todoArray);
-};
-
-const loadTodo = () => {
-  const todos = localStorage.getItem('todos');
-  const todoArray = todos.split(',');
-  todoArray.forEach((todo) => {
-    addTodo(todo);
-    todoArray.push(todo);
-  });
 };
 
 const addTodo = (data) => {
@@ -36,8 +25,36 @@ const addTodo = (data) => {
   todo.append(deleteBtn);
   deleteBtn.addEventListener('click', deleteTodo);
 };
+
 const deleteTodo = (e) => {
+  todoArray = [];
   e.target.parentElement.remove();
+  const value = e.target.parentElement.firstChild.data;
+  const loadList = localStorage.getItem('todos');
+  const loadArray = loadList.split(',');
+  loadArray.forEach((todo) => {
+    if (todo !== value) {
+      todoArray.push(todo);
+    }
+  });
+  localStorage.setItem('todos', todoArray);
+};
+
+const savrTodo = (todo) => {
+  todoArray.push(todo);
+  localStorage.setItem('todos', todoArray);
+};
+
+const loadTodo = () => {
+  const todos = localStorage.getItem('todos');
+  if (todos === null || todos === '') {
+    return;
+  }
+  const todoList = todos.split(',');
+  todoList.forEach((todo) => {
+    addTodo(todo);
+    todoArray.push(todo);
+  });
 };
 
 form.addEventListener('submit', handleSubmit);
