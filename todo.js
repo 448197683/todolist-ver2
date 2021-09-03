@@ -2,22 +2,25 @@ const form = document.querySelector('form');
 const input = document.querySelector('input');
 const ul = document.querySelector('ul');
 let todoArray = [];
-
+let i = 0;
 input.focus();
 
 const handleSubmit = (e) => {
   e.preventDefault();
   const todo = input.value;
+  i = i + 1;
+  todo.id = i;
   if (todo === '') {
     return;
   }
-  addTodo(todo);
-  savrTodo(todo);
+  addTodo(todo, i);
+  saveTodo(todo, i);
   input.value = ``;
 };
 
-const addTodo = (data) => {
+const addTodo = (data, i) => {
   const todo = document.createElement('li');
+  todo.id = i;
   const deleteBtn = document.createElement('span');
   todo.innerHTML = data;
   deleteBtn.innerHTML = `🗑`;
@@ -29,31 +32,32 @@ const addTodo = (data) => {
 const deleteTodo = (e) => {
   todoArray = [];
   e.target.parentElement.remove();
-  const value = e.target.parentElement.firstChild.data;
-  const loadList = localStorage.getItem('todos');
-  const loadArray = loadList.split(',');
-  loadArray.forEach((todo) => {
-    if (todo !== value) {
+  const target = e.target.parentElement;
+  const todoJSON = localStorage.getItem('todos');
+  const todoObj = JSON.parse(todoJSON);
+  todoObj.forEach((todo) => {
+    if (Number(target.id) !== Number(todo.id)) {
       todoArray.push(todo);
     }
   });
-  localStorage.setItem('todos', todoArray);
+  console.log(todoArray);
+  localStorage.setItem('todos', JSON.stringify(todoArray));
 };
 
-const savrTodo = (todo) => {
-  todoArray.push(todo);
-  localStorage.setItem('todos', todoArray);
+const saveTodo = (todo, i) => {
+  const todoObj = { todo: todo, id: i };
+  todoArray.push(todoObj);
+  localStorage.setItem('todos', JSON.stringify(todoArray));
 };
 
 const loadTodo = () => {
-  const todos = localStorage.getItem('todos');
-  if (todos === null || todos === '') {
+  const todosJSON = localStorage.getItem('todos');
+  if (todosJSON === '' || todosJSON === null) {
     return;
   }
-  const todoList = todos.split(',');
-  todoList.forEach((todo) => {
-    addTodo(todo);
-    todoArray.push(todo);
+  const todos = JSON.parse(todosJSON);
+  todos.forEach((todo) => {
+    addTodo(todo.todo, todo.id);
   });
 };
 
