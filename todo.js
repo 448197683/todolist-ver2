@@ -58,7 +58,9 @@ const loadTodo = () => {
   const todos = JSON.parse(todosJSON);
   todos.forEach((todo) => {
     addTodo(todo.todo, todo.id);
+    todoArray.push(todo);
   });
+  i = todos.length;
 };
 
 form.addEventListener('submit', handleSubmit);
